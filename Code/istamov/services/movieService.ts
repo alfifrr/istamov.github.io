@@ -1,9 +1,13 @@
-import api from "../lib/api";
+import api from "../lib/axios";
 
-const fetchAuthentication = async () => {
+const fetchNextRequest = async () => {
   api
-    .get("/authentication")
+    .get("/api/authentication")
     .then((response) => {
+      if (response.status !== 200) {
+        throw new Error("Network response was not ok");
+      }
+      console.log(response);
       return response.data;
     })
     .catch((error) => {
@@ -12,4 +16,4 @@ const fetchAuthentication = async () => {
     });
 };
 
-export default fetchAuthentication;
+export default fetchNextRequest;
