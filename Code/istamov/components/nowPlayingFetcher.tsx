@@ -60,7 +60,11 @@ const NowPlaying: React.FC = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-1">
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+        Now Playing
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
         {moviesToDisplay.map((movie: any) => (
           <Card
             key={movie.id}
