@@ -14,11 +14,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   api
     .get(endpoint)
     .then((response) => {
-      console.log(response);
       res.status(200).json(response.data);
     })
     .catch((error) => {
-      console.error("Error fetching authentication:", error);
       res.status(500).json(error);
     });
 };
