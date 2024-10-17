@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import fetchAuthentication from "@/services/movieService";
 import { Card, FlowbiteCardTheme } from "flowbite-react";
+import React, { useEffect, useState } from "react";
 
 const customCard: FlowbiteCardTheme = {
   root: {
@@ -22,29 +21,46 @@ const customCard: FlowbiteCardTheme = {
   },
 };
 
-const NowPlaying: React.FC = () => {
+const Popular: React.FC = () => {
   const [movieData, setMovieData] = useState<any>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const endpoint = "/3/movie/now_playing?language=en-US&page=1";
-      fetch(`/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint)}`)
-        .then((response) => {
-          if (response.status !== 200) {
-            throw new Error("Network response was not ok");
-          }
+      const endpoint1 =
+        "/3/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc&with_original_language=en";
+      const endpoint2 =
+        "/3/discover/movie?include_adult=false&include_video=false&page=2&sort_by=popularity.desc&with_original_language=en";
 
-          response.json().then((resolvedData) => {
-            console.log(resolvedData);
-            setMovieData(resolvedData);
-          });
-        })
-        .catch((error) => {
-          setError(error as Error);
-        });
+      try {
+        const response1 = await fetch(
+          `/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint1)}`
+        );
+        if (response1.status !== 200) {
+          throw new Error("Network response was not ok for endpoint1");
+        }
+        const data1 = await response1.json();
+
+        const response2 = await fetch(
+          `/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint2)}`
+        );
+        if (response2.status !== 200) {
+          throw new Error("Network response was not ok for endpoint2");
+        }
+        const data2 = await response2.json();
+
+        const combinedData = {
+          ...data1,
+          results: [...data1.results, ...data2.results].slice(0, 30),
+        };
+
+        console.log(combinedData);
+
+        setMovieData(combinedData);
+      } catch (error) {
+        setError(error as Error);
+      }
     };
-
     fetchData();
   }, []);
 
@@ -55,17 +71,16 @@ const NowPlaying: React.FC = () => {
     return <div className="text-xs">Loading...</div>;
   }
 
-  const moviesToDisplay = movieData.results.slice(0, 6);
   const posterWidth = 300;
 
   return (
     <>
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-        Now Playing
+        Popular List
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
-        {moviesToDisplay.map((movie: any) => (
+        {movieData.results.map((movie: any) => (
           <Card
             key={movie.id}
             theme={customCard}
@@ -91,4 +106,4 @@ const NowPlaying: React.FC = () => {
   );
 };
 
-export default NowPlaying;
+export default Popular;

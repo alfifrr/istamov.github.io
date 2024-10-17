@@ -1,5 +1,6 @@
 // main page
-import NowPlaying from "@/components/nowPlayingFetcher";
+import NowPlaying from "@/components/NowPlaying";
+import Popular from "@/components/Popular";
 import { DarkThemeToggle, Flowbite } from "flowbite-react";
 
 const Home: React.FC = () => {
@@ -13,6 +14,7 @@ const Home: React.FC = () => {
       </Flowbite>
 
       <NowPlaying />
+      <Popular />
     </>
   );
 };
