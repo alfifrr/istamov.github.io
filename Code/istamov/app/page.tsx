@@ -1,6 +1,5 @@
 // main page
-import NowPlaying from "@/components/NowPlaying";
-import Popular from "@/components/Popular";
+import MovieSection from "@/components/MovieSection";
 import { DarkThemeToggle, Flowbite } from "flowbite-react";
 
 const Home: React.FC = () => {
@@ -13,8 +12,7 @@ const Home: React.FC = () => {
         <DarkThemeToggle />
       </Flowbite>
 
-      <NowPlaying />
-      <Popular />
+      <MovieSection />
     </>
   );
 };

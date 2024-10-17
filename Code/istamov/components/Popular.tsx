@@ -1,5 +1,6 @@
 "use client";
-import { Card, FlowbiteCardTheme } from "flowbite-react";
+import axios from "axios";
+import { Button, Card, FlowbiteCardTheme } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 
 const customCard: FlowbiteCardTheme = {
@@ -24,6 +25,7 @@ const customCard: FlowbiteCardTheme = {
 const Popular: React.FC = () => {
   const [movieData, setMovieData] = useState<any>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [displayedMovies, setDisplayedMovies] = useState<number>(6);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +75,10 @@ const Popular: React.FC = () => {
 
   const posterWidth = 300;
 
+  const loadMoreMovies = () => {
+    setDisplayedMovies((prev) => prev + 6);
+  };
+
   return (
     <>
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -80,7 +86,7 @@ const Popular: React.FC = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
-        {movieData.results.map((movie: any) => (
+        {movieData.results.slice(0, displayedMovies).map((movie: any) => (
           <Card
             key={movie.id}
             theme={customCard}
@@ -102,6 +108,12 @@ const Popular: React.FC = () => {
           </Card>
         ))}
       </div>
+
+      {displayedMovies < movieData.results.length && (
+        <div className="flex justify-center mt-4">
+          <Button onClick={loadMoreMovies}>Load More</Button>
+        </div>
+      )}
     </>
   );
 };
