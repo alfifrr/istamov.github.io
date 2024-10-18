@@ -1,3 +1,5 @@
+"use client";
+import { useAuth } from "@/contexts/authContext";
 import {
   Button,
   DarkThemeToggle,
@@ -11,6 +13,8 @@ import {
 import Link from "next/link";
 
 export function NavbarSection() {
+  const { user, logout } = useAuth();
+
   return (
     <Navbar fluid rounded>
       <NavbarBrand>
@@ -19,9 +23,18 @@ export function NavbarSection() {
         </span>
       </NavbarBrand>
       <div className="flex md:order-2">
-        <Link href="/login">
-          <Button>Get started</Button>
-        </Link>
+        {user ? (
+          <>
+            <span className="flex items-center mr-4">
+              {JSON.parse(localStorage.getItem("user") || "{}").username}
+            </span>
+            <Button onClick={logout}>Logout</Button>
+          </>
+        ) : (
+          <Link href="/login">
+            <Button>Get started</Button>
+          </Link>
+        )}
         <Flowbite>
           <DarkThemeToggle />
         </Flowbite>
@@ -31,10 +44,6 @@ export function NavbarSection() {
         <NavbarLink href="#" active>
           Home
         </NavbarLink>
-        <NavbarLink href="#">About</NavbarLink>
-        <NavbarLink href="#">Services</NavbarLink>
-        <NavbarLink href="#">Pricing</NavbarLink>
-        <NavbarLink href="#">Contact</NavbarLink>
       </NavbarCollapse>
     </Navbar>
   );

@@ -14,13 +14,27 @@ const fetchGuestSessionId = async (): Promise<{
   };
 
   try {
-    const response = await axios.request(options);
+    interface GuestSessionResponse {
+      success: boolean;
+      guest_session_id: string;
+      expires_at: string;
+    }
+
+    const response = await axios.request<GuestSessionResponse>(options);
+
+    if (!response.data || !response.data.success) {
+      console.error(
+        "Failed to fetch guest session ID: Empty or unsuccessful response"
+      );
+      return null;
+    }
+
     return {
       guestSessionId: response.data.guest_session_id,
       expiresAt: response.data.expires_at,
     };
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching guest session ID:", error);
     return null;
   }
 };

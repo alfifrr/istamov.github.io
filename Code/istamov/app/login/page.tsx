@@ -3,25 +3,35 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Button, Label, TextInput } from "flowbite-react";
 import { NavbarSection } from "@/components/NavbarSection";
+import { useAuth } from "@/contexts/authContext";
 
 const Login: React.FC = () => {
   const router = useRouter();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ username, password });
-    router.push("/");
+    login(username, password)
+      ? router.push("/")
+      : setError("Invalid credentials");
   };
+
   return (
     <>
       <NavbarSection />
-      <form className="flex max-w-md flex-col gap-4 mx-auto">
+      <form
+        onSubmit={handleLogin}
+        className="flex max-w-md flex-col gap-4 mx-auto"
+      >
         <h1 className="text-2xl text-center font-bold my-4 text-black dark:text-white">
           Login
         </h1>
         <div>
+          {error && <p className="text-red-500">{error}</p>}
+
           <div className="mb-2 block">
             <Label htmlFor="username" value="Your username" />
           </div>
@@ -46,9 +56,7 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <Button onClick={handleLogin} type="submit">
-          Submit
-        </Button>
+        <Button type="submit">Login</Button>
       </form>
     </>
   );
