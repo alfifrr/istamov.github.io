@@ -1,6 +1,6 @@
 // Next API routes
 import type { NextApiRequest, NextApiResponse } from "next";
-import api from "../../lib/axios";
+import api from "@/lib/axios";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { endpoint } = req.query;
@@ -10,15 +10,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       error: "Endpoint query parameter is required and must be a string",
     });
   }
-
-  api
-    .get(endpoint)
-    .then((response) => {
-      res.status(200).json(response.data);
-    })
-    .catch((error) => {
-      res.status(500).json(error);
-    });
 
   try {
     const response = await api.get(endpoint);

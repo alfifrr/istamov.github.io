@@ -10,6 +10,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => boolean;
+  register: (username: string, password: string) => boolean;
   logout: () => void;
 }
 
@@ -27,6 +28,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const register = (username: string, password: string): boolean => {
+    const localStorageUserDb = localStorage.getItem("userdb");
+    let userDb: User[] = localStorageUserDb
+      ? JSON.parse(localStorageUserDb)
+      : [];
+
+    const existingUser = userDb.find((user) => user.username === username);
+    if (!existingUser) {
+      const newUser = { username, password };
+      userDb.push(newUser);
+      localStorage.setItem("userdb", JSON.stringify(userDb));
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const login = (username: string, password: string): boolean => {
     const localStorageUserDb = localStorage.getItem("userdb");
     let userDb: User[] = localStorageUserDb
@@ -34,21 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       : [];
 
     const existingUser = userDb.find((user) => user.username === username);
-    if (existingUser) {
-      if (existingUser.password === password) {
-        setUser(existingUser);
-        localStorage.setItem("user", JSON.stringify(existingUser));
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      const newUser = { username, password };
-      userDb.push(newUser);
-      localStorage.setItem("userdb", JSON.stringify(userDb));
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+    if (existingUser && existingUser.password === password) {
+      setUser(existingUser);
+      localStorage.setItem("user", JSON.stringify(existingUser));
       return true;
+    } else {
+      return false;
     }
   };
 
@@ -58,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
