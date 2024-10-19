@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeModeScript } from "flowbite-react";
 import { AuthProvider } from "@/contexts/authContext";
+import { FavoriteProvider } from "@/contexts/favoriteContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,7 +34,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-black`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <FavoriteProvider>{children}</FavoriteProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -20,9 +20,9 @@ const Login: React.FC = () => {
       return setError("Please fill in all fields");
     }
 
-    register(username, password)
-      ? router.push("/")
-      : setError("User already exists");
+    register(username, password).then((res) => {
+      res ? router.push("/") : setError("User already exists");
+    });
   };
 
   return (

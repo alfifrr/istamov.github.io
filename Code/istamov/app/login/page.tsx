@@ -12,26 +12,20 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const loginRequest = async () => {
-    try {
-      const domain = "http://localhost:3000";
-      const getRequestToken = await api.get("/3/authentication/token/new");
-      const response = await getRequestToken.data;
-      const askUserPermissionUrl = `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${domain}/approved`;
-      window.open(askUserPermissionUrl, "_blank");
-    } catch (error) {
-      console.log(error);
-    }
-    router.push("/");
-  };
+  const [info, setInfo] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    login(username, password)
-      ? loginRequest()
-      : setError("Invalid credentials");
+    const loginState = localStorage.getItem("user");
+
+    if (!loginState) {
+      if (login(username, password)) {
+        setInfo("Success. Redirecting...");
+        router.push("/");
+      } else {
+        setInfo("Invalid credentials");
+      }
+    }
   };
 
   return (
@@ -45,10 +39,10 @@ const Login: React.FC = () => {
           Login
         </h1>
         <div>
-          {error && (
+          {info && (
             <>
-              <Alert color="failure">
-                <strong>Error!</strong> {error}
+              <Alert color="blue">
+                <strong>Info:</strong> {info}
               </Alert>
             </>
           )}

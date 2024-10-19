@@ -1,16 +1,19 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import api from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 interface User {
   username: string;
   password: string;
+  sessionId: string | null;
 }
 
 // using these properties with useAuth hook
 interface AuthContextType {
   user: User | null;
   login: (username: string, password: string) => boolean;
-  register: (username: string, password: string) => boolean;
+  register: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -20,6 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -28,7 +32,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  const register = (username: string, password: string): boolean => {
+  const askUserPermission = async (username: string) => {
+    const domain = "http://localhost:3000";
+    try {
+      const getRequestToken = await api.get("/3/authentication/token/new");
+      const response = await getRequestToken.data;
+      const askUserPermissionUrl = `https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=${domain}/approved?username=${username}`;
+      window.open(askUserPermissionUrl, "_blank");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const register = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     const localStorageUserDb = localStorage.getItem("userdb");
     let userDb: User[] = localStorageUserDb
       ? JSON.parse(localStorageUserDb)
@@ -36,11 +55,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const existingUser = userDb.find((user) => user.username === username);
     if (!existingUser) {
-      const newUser = { username, password };
+      await askUserPermission(username);
+
+      const newUser = { username, password, sessionId: null };
       userDb.push(newUser);
       localStorage.setItem("userdb", JSON.stringify(userDb));
       setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+      // localStorage.setItem("user", JSON.stringify(newUser));
       return true;
     } else {
       return false;
@@ -55,6 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const existingUser = userDb.find((user) => user.username === username);
     if (existingUser && existingUser.password === password) {
+      if (!existingUser.sessionId) {
+        askUserPermission(username);
+      }
+
       setUser(existingUser);
       localStorage.setItem("user", JSON.stringify(existingUser));
       return true;
@@ -66,6 +91,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    window.location.reload();
+    router.push("/");
   };
 
   return (

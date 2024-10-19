@@ -11,28 +11,41 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function NavbarSection() {
   const { user, logout } = useAuth();
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username);
+    } else {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUsername(JSON.parse(storedUser).username);
+      }
+    }
+  }, [user]);
 
   return (
     <Navbar fluid rounded>
       <NavbarBrand>
         <span className="self-center whitespace-nowrap text-xl font-semibold text-black dark:text-white">
-          Welcome to Istamov
+          Welcome, {username ? username : "guest"}!
         </span>
       </NavbarBrand>
       <div className="flex md:order-2">
-        {user ? (
+        {username ? (
           <>
-            <span className="flex items-center mr-4">
-              {JSON.parse(localStorage.getItem("user") || "{}").username}
+            <span className="flex items-center mr-4 text-black dark:text-white">
+              {username}
             </span>
             <Button onClick={logout}>Logout</Button>
           </>
         ) : (
           <Link href="/login">
-            <Button>Get started</Button>
+            <Button>Login</Button>
           </Link>
         )}
         <Flowbite>
