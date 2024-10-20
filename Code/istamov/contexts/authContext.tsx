@@ -63,7 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       userDb.push(newUser);
       localStorage.setItem("userdb", JSON.stringify(userDb));
       setUser(newUser);
-      // localStorage.setItem("user", JSON.stringify(newUser));
       return true;
     } else {
       return false;

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { withAuth } from "@/hoc/pageControl";
 
@@ -11,7 +11,7 @@ interface User {
   sessionId: string | null;
 }
 
-const Approved: React.FC = () => {
+const ApprovedContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const Approved: React.FC = () => {
 
           // save the session id to local storage
           const localStorageUserDb = localStorage.getItem("userdb");
-          let userDb: User[] = localStorageUserDb
+          const userDb: User[] = localStorageUserDb
             ? JSON.parse(localStorageUserDb)
             : [];
 
@@ -68,5 +68,17 @@ const Approved: React.FC = () => {
     </div>
   );
 };
+
+const Approved: React.FC = () => (
+  <Suspense
+    fallback={
+      <div className="h-screen flex items-center justify-center text-black dark:text-white">
+        Loading...
+      </div>
+    }
+  >
+    <ApprovedContent />
+  </Suspense>
+);
 
 export default withAuth(Approved);

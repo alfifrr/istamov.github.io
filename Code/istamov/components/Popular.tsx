@@ -5,9 +5,34 @@ import MovieCard from "./MovieCard";
 import { useAuth } from "@/contexts/authContext";
 import { useFavorite } from "@/contexts/favoriteContext";
 import SkeletonLoading from "./SkeletonLoading";
+import api from "@/lib/axios";
+
+interface Popular {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+interface Movie {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
 
 const Popular: React.FC = () => {
-  const [movieData, setMovieData] = useState<any>(null);
+  const [movieData, setMovieData] = useState<Popular>();
   const [error, setError] = useState<Error | null>(null);
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [displayedMovies, setDisplayedMovies] = useState<number>(6);
@@ -22,21 +47,17 @@ const Popular: React.FC = () => {
         "/3/discover/movie?include_adult=false&include_video=false&page=2&sort_by=popularity.desc&with_original_language=en";
 
       try {
-        const response1 = await fetch(
-          `/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint1)}`
-        );
+        const response1 = await api.get(endpoint1);
         if (response1.status !== 200) {
           throw new Error("Network response was not ok for endpoint1");
         }
-        const data1 = await response1.json();
+        const data1 = await response1.data;
 
-        const response2 = await fetch(
-          `/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint2)}`
-        );
+        const response2 = await api.get(endpoint2);
         if (response2.status !== 200) {
           throw new Error("Network response was not ok for endpoint2");
         }
-        const data2 = await response2.json();
+        const data2 = await response2.data;
 
         const combinedData = {
           ...data1,
@@ -62,7 +83,7 @@ const Popular: React.FC = () => {
           console.error(error);
         });
     }
-  }, []);
+  }, [getFavorites, user]);
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
     addFavorite(id, checked)
@@ -97,7 +118,7 @@ const Popular: React.FC = () => {
     return (
       <>
         <h2 className="text-3xl text-center my-4 font-bold text-gray-900 dark:text-white">
-          Now Playing
+          Popular List
         </h2>
         <SkeletonLoading />
       </>
@@ -111,12 +132,12 @@ const Popular: React.FC = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
-        {movieData.results.slice(0, displayedMovies).map((movie: any) => (
+        {movieData.results.slice(0, displayedMovies).map((movie) => (
           <MovieCard
             key={movie.id}
             movie={movie}
             onChange={handleCheckboxChange}
-            user={user}
+            user={user ? { sessionId: user.sessionId } : { sessionId: null }}
             checkedIds={checkedIds}
           />
         ))}

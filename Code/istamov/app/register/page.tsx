@@ -34,7 +34,11 @@ const Login: React.FC = () => {
     }
 
     register(username, password).then((res) => {
-      res ? router.push("/") : setError("User already exists");
+      if (res) {
+        router.push("/");
+      } else {
+        setError("User already exists");
+      }
     });
   };
 

@@ -22,9 +22,14 @@ const customCard: FlowbiteCardTheme = {
 };
 
 interface MovieCardProps {
-  movie: any;
+  movie: {
+    id: number;
+    title: string;
+    poster_path: string;
+    overview: string;
+  };
   onChange: (id: number, checked: boolean) => void;
-  user?: any;
+  user: { sessionId: string | null };
   checkedIds: number[];
 }
 
@@ -40,8 +45,6 @@ const MovieCard: React.FC<MovieCardProps> = ({
   return (
     <Card
       key={movie.id}
-      // onClick={onClick ? (e) => onClick(e, movie.id) : undefined}
-      // onTouchStart={onClick ? (e) => onClick(e, movie.id) : undefined}
       theme={customCard}
       style={{ maxWidth: "200px", height: "auto" }}
       className="max-w-sm"

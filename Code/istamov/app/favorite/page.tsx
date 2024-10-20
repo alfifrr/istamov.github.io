@@ -7,11 +7,28 @@ import { useFavorite } from "@/contexts/favoriteContext";
 import { withAuth } from "@/hoc/pageControl";
 import React, { useEffect, useState } from "react";
 
+interface MovieData {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
+
 const Favorite: React.FC = () => {
   const { getFavorites, addFavorite } = useFavorite();
   const { user } = useAuth();
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
-  const [movieData, setMovieData] = useState<any[]>([]);
+  const [movieData, setMovieData] = useState<MovieData[]>([]);
 
   useEffect(() => {
     getFavorites()
@@ -26,7 +43,7 @@ const Favorite: React.FC = () => {
       });
     if (user) {
     }
-  }, []);
+  }, [getFavorites, user]);
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
     addFavorite(id, checked)
@@ -71,12 +88,12 @@ const Favorite: React.FC = () => {
 
       {movieData ? (
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
-          {movieData.map((movie: any) => (
+          {movieData.map((movie) => (
             <MovieCard
               key={movie.id}
               movie={movie}
               onChange={handleCheckboxChange}
-              user={user}
+              user={user ? { sessionId: user.sessionId } : { sessionId: null }}
               checkedIds={checkedIds}
             />
           ))}

@@ -4,9 +4,38 @@ import { useFavorite } from "@/contexts/favoriteContext";
 import { useAuth } from "@/contexts/authContext";
 import MovieCard from "./MovieCard";
 import SkeletonLoading from "./SkeletonLoading";
+import api from "@/lib/axios";
+
+interface NowPlaying {
+  dates: {
+    maximum: string;
+    minimum: string;
+  };
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+interface Movie {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
 
 const NowPlaying: React.FC = () => {
-  const [movieData, setMovieData] = useState<any>(null);
+  const [movieData, setMovieData] = useState<NowPlaying>();
   const [error, setError] = useState<Error | null>(null);
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const { user } = useAuth();
@@ -14,21 +43,19 @@ const NowPlaying: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const endpoint = "/3/movie/now_playing?language=en-US&page=1";
-      fetch(`/api/apiProxyHandler?endpoint=${encodeURIComponent(endpoint)}`)
-        .then((response) => {
-          if (response.status !== 200) {
-            throw new Error("Network response was not ok");
-          }
+      try {
+        const response = await api.get(
+          `/3/movie/now_playing?language=en-US&page=1`
+        );
+        if (response.status !== 200) {
+          throw new Error("Network response was not ok");
+        }
 
-          response.json().then((resolvedData) => {
-            console.log(resolvedData);
-            setMovieData(resolvedData);
-          });
-        })
-        .catch((error) => {
-          setError(error as Error);
-        });
+        console.log(response.data);
+        setMovieData(response.data);
+      } catch {
+        setError(new Error("Error fetching data"));
+      }
     };
 
     fetchData();
@@ -43,7 +70,7 @@ const NowPlaying: React.FC = () => {
           console.error(error);
         });
     }
-  }, []);
+  }, [getFavorites, user]);
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
     addFavorite(id, checked)
@@ -94,12 +121,12 @@ const NowPlaying: React.FC = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-1 justify-items-center">
-        {moviesToDisplay.map((movie: any) => (
+        {moviesToDisplay.map((movie) => (
           <MovieCard
             key={movie.id}
             movie={movie}
             onChange={handleCheckboxChange}
-            user={user}
+            user={user ? { sessionId: user.sessionId } : { sessionId: null }}
             checkedIds={checkedIds}
           />
         ))}
