@@ -3,4 +3,4 @@ node_modules/
 npm-debug.log
 
 # ignore public/dist folder
-Public/dist/
+# Public/dist/
