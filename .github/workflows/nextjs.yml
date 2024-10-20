@@ -53,7 +53,7 @@ jobs:
         with:
           # match your node version with the package.json
           node-version: "20"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          cache: "/home/runner/work/istamov.github.io/istamov.github.io/Code/istamov"
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
