@@ -32,12 +32,15 @@ const NowPlaying: React.FC = () => {
 
     fetchData();
 
-    const user = localStorage.getItem("user");
     if (user) {
-      getFavorites().then((ids) => {
-        console.log(ids);
-        setCheckedIds(ids);
-      });
+      getFavorites()
+        .then((res) => {
+          const ids = res.map((item) => item.id);
+          setCheckedIds(ids);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }, []);
 
@@ -48,43 +51,29 @@ const NowPlaying: React.FC = () => {
     return <div className="text-xs">Loading...</div>;
   }
 
-  const clickFavorite = (e: React.FormEvent, id: number) => {
-    e.preventDefault();
-
-    // if (user && user.sessionId) {
-    //   addFavorite(id)
-    //     .then((res) => {
-    //       res
-    //         ? console.log("Favorite added")
-    //         : console.error("Could not add favorite");
-    //     })
-    //     .catch((error) => {
-    //       console.log("Error adding favorite:", error);
-    //     });
-    // }
-  };
-
   const handleCheckboxChange = (id: number, checked: boolean) => {
-    if (checked) {
-      addFavorite(id)
-        .then((res) => {
-          if (res) {
+    addFavorite(id, checked)
+      .then((res) => {
+        if (res) {
+          if (checked) {
             setCheckedIds((prev) => [...prev, id]);
             console.log("Favorite added");
           } else {
-            console.error("Could not add favorite");
+            setCheckedIds((prev) =>
+              prev.filter((checkedId) => checkedId !== id)
+            );
+            console.log("Favorite removed");
           }
-        })
-        .catch((error) => {
-          console.log("Error adding favorite:", error);
-        });
-    } else {
-      setCheckedIds((prev) => prev.filter((checkedId) => checkedId !== id));
-    }
+        } else {
+          console.error("Could not update favorite list");
+        }
+      })
+      .catch((error) => {
+        console.log("Error adding favorite:", error);
+      });
   };
 
   const moviesToDisplay = movieData.results.slice(0, 6);
-  const posterWidth = 300;
 
   return (
     <>
@@ -97,8 +86,6 @@ const NowPlaying: React.FC = () => {
           <MovieCard
             key={movie.id}
             movie={movie}
-            posterWidth={posterWidth}
-            onClick={clickFavorite}
             onChange={handleCheckboxChange}
             user={user}
             checkedIds={checkedIds}

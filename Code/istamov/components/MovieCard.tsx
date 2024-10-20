@@ -23,8 +23,6 @@ const customCard: FlowbiteCardTheme = {
 
 interface MovieCardProps {
   movie: any;
-  posterWidth: number;
-  onClick?: (e: React.FormEvent, id: number) => void;
   onChange: (id: number, checked: boolean) => void;
   user?: any;
   checkedIds: number[];
@@ -32,19 +30,18 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({
   movie,
-  posterWidth,
-  onClick,
   onChange,
   user,
   checkedIds,
 }) => {
   const isChecked = checkedIds && checkedIds.includes(movie.id);
+  const posterWidth = 300;
 
   return (
     <Card
       key={movie.id}
-      onClick={onClick ? (e) => onClick(e, movie.id) : undefined}
-      onTouchStart={onClick ? (e) => onClick(e, movie.id) : undefined}
+      // onClick={onClick ? (e) => onClick(e, movie.id) : undefined}
+      // onTouchStart={onClick ? (e) => onClick(e, movie.id) : undefined}
       theme={customCard}
       style={{ maxWidth: "200px", height: "auto" }}
       className="max-w-sm"

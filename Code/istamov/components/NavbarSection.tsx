@@ -51,12 +51,18 @@ export function NavbarSection() {
         <Flowbite>
           <DarkThemeToggle />
         </Flowbite>
-        <NavbarToggle />
+        {user && user.sessionId && <NavbarToggle />}
       </div>
       <NavbarCollapse>
-        <NavbarLink href="#" active>
-          Home
-        </NavbarLink>
+        {user && user.sessionId && (
+          <Link href="/favorite">
+            <NavbarLink as="div">Favorites</NavbarLink>
+          </Link>
+        )}
+
+        <Link href="/">
+          <NavbarLink as="div">Dashboard</NavbarLink>
+        </Link>
       </NavbarCollapse>
     </Navbar>
   );

@@ -3,9 +3,26 @@ import React, { createContext, useContext } from "react";
 import api from "@/lib/axios";
 import { useAuth } from "./authContext";
 
+interface MovieData {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
+
 interface FavoriteContextType {
-  getFavorites: () => Promise<number[]>;
-  addFavorite: (id: number) => Promise<boolean>;
+  getFavorites: () => Promise<MovieData[]>;
+  addFavorite: (id: number, favorite: boolean) => Promise<boolean>;
 }
 
 const FavoriteContext = createContext<FavoriteContextType | undefined>(
@@ -17,7 +34,7 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user } = useAuth();
 
-  const getFavorites = async (): Promise<number[]> => {
+  const getFavorites = async (): Promise<MovieData[]> => {
     const loggedUser = localStorage.getItem("user");
     try {
       console.log(loggedUser && JSON.parse(loggedUser).sessionId);
@@ -29,15 +46,20 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
         }`
       );
 
-      const favorites = response.data.results;
-      return favorites.map((movie: any) => movie.id);
+      console.log(response.data.results);
+      return response.data.results;
+      // return favorites.map((movie: any) => movie.id);
     } catch (error) {
       console.error("Error requesting GET favorites:", error);
-      return [];
+      // return [];
+      return Promise.reject(error);
     }
   };
 
-  const addFavorite = async (id: number): Promise<boolean> => {
+  const addFavorite = async (
+    id: number,
+    favorite: boolean
+  ): Promise<boolean> => {
     interface PostFavoriteResponse {
       data: {
         success: boolean;
@@ -54,7 +76,7 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
         {
           media_type: "movie",
           media_id: id,
-          favorite: true,
+          favorite: favorite,
         }
       );
       return postFavorite.data.success ? true : false;

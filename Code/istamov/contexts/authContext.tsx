@@ -23,10 +23,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
-  const storedUser = localStorage.getItem("user");
-  const [user, setUser] = useState<User | null>(
-    storedUser ? JSON.parse(storedUser) : null
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setLoading(false);
+    }
+  }, []);
 
   const askUserPermission = async (username: string) => {
     const domain = "http://localhost:3000";
