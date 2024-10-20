@@ -51,7 +51,7 @@ export function NavbarSection() {
         <Flowbite>
           <DarkThemeToggle />
         </Flowbite>
-        {user && user.sessionId && <NavbarToggle />}
+        <NavbarToggle />
       </div>
       <NavbarCollapse>
         {user && user.sessionId && (

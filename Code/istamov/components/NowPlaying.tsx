@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useFavorite } from "@/contexts/favoriteContext";
 import { useAuth } from "@/contexts/authContext";
 import MovieCard from "./MovieCard";
+import SkeletonLoading from "./SkeletonLoading";
 
 const NowPlaying: React.FC = () => {
   const [movieData, setMovieData] = useState<any>(null);
@@ -44,13 +45,6 @@ const NowPlaying: React.FC = () => {
     }
   }, []);
 
-  if (error) {
-    return <div className="text-xs">Error: {error.message}</div>;
-  }
-  if (!movieData) {
-    return <div className="text-xs">Loading...</div>;
-  }
-
   const handleCheckboxChange = (id: number, checked: boolean) => {
     addFavorite(id, checked)
       .then((res) => {
@@ -73,11 +67,29 @@ const NowPlaying: React.FC = () => {
       });
   };
 
+  if (error) {
+    return (
+      <div className="text-xs h-screen flex items-center justify-center text-black dark:text-white">
+        Error: {error.message}
+      </div>
+    );
+  }
+  if (!movieData) {
+    return (
+      <>
+        <h2 className="text-3xl text-center my-4 font-bold text-gray-900 dark:text-white">
+          Now Playing
+        </h2>
+        <SkeletonLoading />
+      </>
+    );
+  }
+
   const moviesToDisplay = movieData.results.slice(0, 6);
 
   return (
     <>
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <h2 className="text-3xl text-center my-4 font-bold text-gray-900 dark:text-white">
         Now Playing
       </h2>
 

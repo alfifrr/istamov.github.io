@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const askUserPermission = async (username: string) => {
-    const domain = "http://localhost:3000";
+    const domain = `${process.env.NEXT_PUBLIC_APP_URL}`;
     try {
       const getRequestToken = await api.get("/3/authentication/token/new");
       const response = await getRequestToken.data;

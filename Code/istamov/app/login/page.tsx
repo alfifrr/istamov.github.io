@@ -5,7 +5,6 @@ import { Alert, Button, Label, TextInput } from "flowbite-react";
 import { NavbarSection } from "@/components/NavbarSection";
 import { useAuth } from "@/contexts/authContext";
 import Link from "next/link";
-import api from "@/lib/axios";
 import { withoutAuth } from "@/hoc/pageControl";
 
 const Login: React.FC = () => {
