@@ -3,6 +3,7 @@ import MovieCard from "@/components/MovieCard";
 import { NavbarSection } from "@/components/NavbarSection";
 import { useAuth } from "@/contexts/authContext";
 import { useFavorite } from "@/contexts/favoriteContext";
+import { withAuth } from "@/hoc/pageControl";
 import React, { useEffect, useState } from "react";
 
 const Favorite: React.FC = () => {
@@ -70,4 +71,4 @@ const Favorite: React.FC = () => {
   );
 };
 
-export default Favorite;
+export default withAuth(Favorite);

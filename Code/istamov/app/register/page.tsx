@@ -5,6 +5,7 @@ import { Alert, Button, Label, TextInput } from "flowbite-react";
 import { NavbarSection } from "@/components/NavbarSection";
 import { useAuth } from "@/contexts/authContext";
 import Link from "next/link";
+import { withoutAuth } from "@/hoc/pageControl";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -18,6 +19,18 @@ const Login: React.FC = () => {
 
     if (!username || !password) {
       return setError("Please fill in all fields");
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9._@]+$/;
+    const passwordRegex = /^\S+$/;
+
+    if (!usernameRegex.test(username)) {
+      return setError(
+        "Username can only contain letters, numbers, underscores, @ signs, and dots, and no spaces."
+      );
+    }
+    if (!passwordRegex.test(password)) {
+      return setError("Password cannot contain spaces.");
     }
 
     register(username, password).then((res) => {
@@ -81,4 +94,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default withoutAuth(Login);
