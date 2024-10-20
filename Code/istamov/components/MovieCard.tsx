@@ -25,15 +25,21 @@ interface MovieCardProps {
   movie: any;
   posterWidth: number;
   onClick?: (e: React.FormEvent, id: number) => void;
+  onChange: (id: number, checked: boolean) => void;
   user?: any;
+  checkedIds: number[];
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
   movie,
   posterWidth,
   onClick,
+  onChange,
   user,
+  checkedIds,
 }) => {
+  const isChecked = checkedIds && checkedIds.includes(movie.id);
+
   return (
     <Card
       key={movie.id}
@@ -47,7 +53,12 @@ const MovieCard: React.FC<MovieCardProps> = ({
         typeof posterWidth === "string" ? posterWidth : `w${posterWidth}`
       }${movie.poster_path}`}
     >
-      {user && user.sessionId && <Checkbox />}
+      {user && user.sessionId && (
+        <Checkbox
+          checked={isChecked}
+          onChange={(e) => onChange && onChange(movie.id, e.target.checked)}
+        />
+      )}
       <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
         {movie.title}
       </h5>

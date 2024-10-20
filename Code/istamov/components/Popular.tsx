@@ -9,9 +9,10 @@ import { useFavorite } from "@/contexts/favoriteContext";
 const Popular: React.FC = () => {
   const [movieData, setMovieData] = useState<any>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [displayedMovies, setDisplayedMovies] = useState<number>(6);
   const { user } = useAuth();
-  const { addFavorite } = useFavorite();
+  const { addFavorite, getFavorites } = useFavorite();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +51,14 @@ const Popular: React.FC = () => {
       }
     };
     fetchData();
+
+    const user = localStorage.getItem("user");
+    if (user) {
+      getFavorites().then((ids) => {
+        console.log(ids);
+        setCheckedIds(ids);
+      });
+    }
   }, []);
 
   if (error) {
@@ -62,16 +71,35 @@ const Popular: React.FC = () => {
   const clickFavorite = (e: React.FormEvent, id: number) => {
     e.preventDefault();
 
-    if (user && user.sessionId) {
+    // if (user && user.sessionId) {
+    //   addFavorite(id)
+    //     .then((res) => {
+    //       res
+    //         ? console.log("Favorite added")
+    //         : console.error("Could not add favorite");
+    //     })
+    //     .catch((error) => {
+    //       console.log("Error adding favorite:", error);
+    //     });
+    // }
+  };
+
+  const handleCheckboxChange = (id: number, checked: boolean) => {
+    if (checked) {
       addFavorite(id)
         .then((res) => {
-          res
-            ? console.log("Favorite added")
-            : console.error("Could not add favorite");
+          if (res) {
+            setCheckedIds((prev) => [...prev, id]);
+            console.log("Favorite added");
+          } else {
+            console.error("Could not add favorite");
+          }
         })
         .catch((error) => {
           console.log("Error adding favorite:", error);
         });
+    } else {
+      setCheckedIds((prev) => prev.filter((checkedId) => checkedId !== id));
     }
   };
 
@@ -94,7 +122,9 @@ const Popular: React.FC = () => {
             movie={movie}
             posterWidth={posterWidth}
             onClick={clickFavorite}
+            onChange={handleCheckboxChange}
             user={user}
+            checkedIds={checkedIds}
           />
         ))}
       </div>

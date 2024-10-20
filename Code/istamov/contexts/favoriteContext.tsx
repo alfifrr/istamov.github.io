@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 import { useAuth } from "./authContext";
 
 interface FavoriteContextType {
-  getFavorites: () => void;
+  getFavorites: () => Promise<number[]>;
   addFavorite: (id: number) => Promise<boolean>;
 }
 
@@ -17,9 +17,24 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user } = useAuth();
 
-  const getFavorites = () => {
+  const getFavorites = async (): Promise<number[]> => {
+    const loggedUser = localStorage.getItem("user");
     try {
-    } catch (error) {}
+      console.log(loggedUser && JSON.parse(loggedUser).sessionId);
+      const response = await api.get(
+        `/3/account/${
+          process.env.NEXT_PUBLIC_TMDB_ACCOUNT_ID
+        }/favorite/movies?language=en-US&page=1&session_id=${
+          loggedUser && JSON.parse(loggedUser).sessionId
+        }`
+      );
+
+      const favorites = response.data.results;
+      return favorites.map((movie: any) => movie.id);
+    } catch (error) {
+      console.error("Error requesting GET favorites:", error);
+      return [];
+    }
   };
 
   const addFavorite = async (id: number): Promise<boolean> => {
