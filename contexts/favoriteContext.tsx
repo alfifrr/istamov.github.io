@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext } from "react";
 import api from "@/lib/axios";
-import { useAuth } from "./authContext";
 
 interface MovieData {
   adult: boolean;
@@ -32,12 +31,9 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(
 export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user } = useAuth();
-
   const getFavorites = async (): Promise<MovieData[]> => {
     const loggedUser = localStorage.getItem("user");
     try {
-      console.log(loggedUser && JSON.parse(loggedUser).sessionId);
       const response = await api.get(
         `/3/account/${
           process.env.NEXT_PUBLIC_TMDB_ACCOUNT_ID
@@ -68,11 +64,14 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
       };
     }
 
+    const loggedUser = localStorage.getItem("user");
     try {
       const postFavorite: PostFavoriteResponse = await api.post(
         `/3/account/${
           process.env.NEXT_PUBLIC_TMDB_ACCOUNT_ID
-        }/favorite?session_id=${user && user.sessionId}`,
+        }/favorite?session_id=${
+          loggedUser && JSON.parse(loggedUser).sessionId
+        }`,
         {
           media_type: "movie",
           media_id: id,

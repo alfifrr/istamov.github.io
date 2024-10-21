@@ -35,5 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/Public/dist/
-/Code/istamov/
+# dist folder
+dist/
