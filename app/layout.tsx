@@ -18,7 +18,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Istamov",
-  description: "Istamosh Movie Selection",
+  description:
+    "Istamosh Movie Selection, fetched from TMDB's API service and display it in a user-friendly way, you can mark some movies as your favorite.",
 };
 
 export default function RootLayout({
